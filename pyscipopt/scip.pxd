@@ -317,6 +317,7 @@ cdef extern from "scip/scip.h":
     SCIP_STATUS SCIPgetStatus(SCIP* scip)
     SCIP_Real SCIPepsilon(SCIP* scip)
     SCIP_Real SCIPfeastol(SCIP* scip)
+    SCIP_RETCODE SCIPgetVarsData(SCIP* scip, SCIP_VAR*** vars, int* nvars, int* nbinvars, int* nintvars, int* nimplvars, int* ncontvars)
 
     # Solve Methods
     SCIP_RETCODE SCIPsolve(SCIP* scip)
@@ -352,6 +353,11 @@ cdef extern from "scip/scip.h":
     SCIP_Real SCIPvarGetLbLocal(SCIP_VAR* var)
     SCIP_Real SCIPvarGetUbLocal(SCIP_VAR* var)
     SCIP_Real SCIPvarGetObj(SCIP_VAR* var)
+
+    # LP Methods
+    SCIP_RETCODE SCIPgetLPColsData(SCIP* scip, SCIP_COL*** cols, int* ncols)
+    SCIP_RETCODE SCIPgetLPRowsData(SCIP* scip, SCIP_ROW*** rows, int* nrows)
+    SCIP_RETCODE SCIPgetLPBasisInd(SCIP* scip, int* basisind)
 
     # Constraint Methods
     SCIP_RETCODE SCIPcaptureCons(SCIP* scip, SCIP_CONS* cons)
