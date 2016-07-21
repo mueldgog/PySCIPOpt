@@ -316,12 +316,12 @@ class MyConshdlr(Conshdlr):
 
 
     def consenfops(self, constraints, nusefulconss, solinfeasible, objinfeasible):
+        if self.model.getSolvingTime() > self.model.data['timelim']:
+            return {"result": SCIP_RESULT.DIDNOTFIND}
         return self.consenfolp(constraints, nusefulconss, solinfeasible)
 
 
     def conslock(self, constraint, nlockspos, nlocksneg):
-        # print("[conslock]")
-
         # lock all y variables in both directions
         y = self.model.data['y']
         phi = self.model.data['phi']
@@ -405,8 +405,11 @@ def runBenders(data, timelim, memlim, display, quite):
     # set working limits
     model.setRealParam('limits/time', timelim)
     model.setRealParam('limits/memory', memlim)
-    model.setIntParam('display/freq', 1)
+    model.setIntParam('display/freq', 10000)
     # model.setHeuristics(SCIP_PARAMSETTING.AGGRESSIVE)
+
+    # store time limit for proper termination
+    model.data['timelim'] = timelim
 
     # hide output
     if quite:
