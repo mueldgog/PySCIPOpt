@@ -317,7 +317,7 @@ class MyConshdlr(Conshdlr):
 
     def consenfops(self, constraints, nusefulconss, solinfeasible, objinfeasible):
         if self.model.getSolvingTime() > self.model.data['timelim']:
-            return {"result": SCIP_RESULT.DIDNOTRUN}
+            return {"result": SCIP_RESULT.INFEASIBLE}
         return self.consenfolp(constraints, nusefulconss, solinfeasible)
 
 
