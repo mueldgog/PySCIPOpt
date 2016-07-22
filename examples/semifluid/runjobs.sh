@@ -30,10 +30,12 @@ do
     instancename=(${file//\// })
 
     INFILE=$currentpath"/data/"$instancename
-    OUTFILE=$currentpath"/"$outputpath"/"$USER.$pythonscript.$instancename".out"
+    OUTPATH=$currentpath"/"$outputpath
+    OUTFILE=$USER.$pythonscript.$instancename".out"
 
     export pythonscript
     export INFILE
+    export OUTPATH
     export OUTFILE
     export timelimit
     export memlimit

@@ -1,11 +1,14 @@
 #!/bin/bash
 
-# echo $pythonscript
-# echo $INFILE
-# echo $OUTFILE
-# echo $timelimit
-# echo $memlimit
+# check if tmp-path exists
+if test ! -d /tmp/${USER}-tmpdir
+then
+    mkdir /tmp/${USER}-tmpdir
+    echo Creating directory /tmp/${USER}-tmpdir for temporary outfile
+fi
 
-# echo "python "$pythonscript $INFILE $timelimit $memlimit " &> " $OUTFILE
+TMPFILE=/tmp/${USER}-tmpdir/$OUTFILE
 
-python $pythonscript $INFILE $timelimit $memlimit &> $OUTFILE
+python $pythonscript $INFILE $timelimit $memlimit &> $TMPFILE
+cp $TMPFILE $OUTPATH/$OUTFILE
+rm -f $TMPFILE
