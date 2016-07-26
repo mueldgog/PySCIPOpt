@@ -419,7 +419,7 @@ cdef class LP:
 
         redcost = []
         for i in range(ncols):
-            redcost[i].append(c_redcost[i])
+            redcost.append(c_redcost[i])
 
         free(c_redcost)
         return redcost
