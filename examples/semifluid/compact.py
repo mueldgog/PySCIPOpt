@@ -1,7 +1,6 @@
 from pyscipopt import Model, SCIP_RESULT, SCIP_PARAMSETTING
 from data import read_data
 from math import floor
-from gui import displaySolution
 from evalinstance import getAlpha
 import timeit
 import sys
@@ -128,11 +127,11 @@ def runCompact(data, timelim, memlim, readtimelim, solfileread, solfilewrite, di
     # set working limits
     model.setPresolve(SCIP_PARAMSETTING.OFF)
     model.setSeparating(SCIP_PARAMSETTING.OFF)
-    model.setHeuristics(SCIP_PARAMSETTING.AGRESSIVE)
+    model.setHeuristics(SCIP_PARAMSETTING.AGGRESSIVE)
     model.setRealParam('limits/time', timelim)
     model.setRealParam('limits/memory', memlim)
 
-    model.optimize(False)
+    model.optimize()
     assert not model.getStatus() is 'infeasible' and not model.getStatus() is 'unbounded'
 
     # update statistics
@@ -167,28 +166,28 @@ def runCompact(data, timelim, memlim, readtimelim, solfileread, solfilewrite, di
 
     # display solution
     if display is True:
+        from gui import displaySolution
         displaySolution(data, edgemap)
-
-    # free model
-    model.free()
 
     return edgemap, stats
 
 
 # MAIN
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print('usage: python compact.py <instance>')
+    if len(sys.argv) < 4:
+        print('usage: python compact.py <instance> <time limit> <memory limit> [display] [quite]')
         exit(0)
 
+    # read input
     data = read_data(str(sys.argv[1]))
-    edgemap, stats = runCompact(data, 3600, 10000, 100, None, None, True, False)
+    timelim = float(sys.argv[2])
+    memlim = float(sys.argv[3])
+
+    # optional parameter
+    display = True if len(sys.argv) >= 5 and str(sys.argv[4]) == 'True' else False
+    quite = True if len(sys.argv) >= 6 and str(sys.argv[5]) == 'True' else False
+
+    edgemap, stats = runCompact(data, timelim, memlim, timelim, None, None, display, quite)
 
     # print statistics
-    print( "%10s | %10s %10s %10s %5s | %10s %10s | %10s %10s %10s" %
-           ("status", "primal", "dual", "dualroot", "gap", "time", "nnodes", "nedges", "nxused", "nyused"))
-    print( "%10s | %10f %10f %10f %5.1f | %10s %10s | %10s %10s %10s" %
-           (stats['status'], \
-           stats['primal'], stats['dual'], stats['dualroot'], 100 * stats['gap'], \
-           stats['time'], stats['nnodes'], \
-           stats['nedges'], stats['nxused'], stats['nyused']))
+    print('STATS: ' + str(stats))
