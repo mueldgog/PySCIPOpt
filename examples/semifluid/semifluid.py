@@ -17,7 +17,6 @@ from pyscipopt import Model, Pricer, LP, SCIP_RESULT, SCIP_PARAMSETTING
 from data import read_data
 from evalinstance import getAlpha
 from math import floor
-from gui import displaySolution
 import sys
 
 
@@ -431,36 +430,28 @@ def runPricing(data, timelim, memlim, lpiter, soledgemap, display, quite):
 
     # display solution
     if display is True:
+        from gui import displaySolution
         displaySolution(data, edgemap)
-
-    # free model and LP
-    pricer.data['LP'].free()
-    model.free()
 
     return edgemap, stats
 
 
 # MAIN
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print('usage: python semifluid.py <instance>')
+    if len(sys.argv) < 4:
+        print('usage: python semifluid.py <instance> <time limit> <memory limit> [display] [quite]')
         exit(0)
 
+    # read input
     data = read_data(str(sys.argv[1]))
-    edgemap, stats = runPricing(data, 3600, 10000, -1, None, True, False)
+    timelim = float(sys.argv[2])
+    memlim = float(sys.argv[3])
 
-    # print statistics
-    print( "%10s | %10s %10s %10s %5s | %10s %10s | %10s %10s %10s" %
-           ("status", "primal", "dual", "dualroot", "gap", "time", "nnodes", "nedges", "nxused", "nyused"))
-    print( "%10s | %10f %10f %10f %5.1f | %10s %10s | %10s %10s %10s" %
-           (stats['status'], \
-           stats['primal'], stats['dual'], stats['dualroot'], 100 * stats['gap'], \
-           stats['time'], stats['nnodes'], \
-           stats['nedges'], stats['nxused'], stats['nyused']))
+    # optional parameter
+    display = True if len(sys.argv) >= 5 and str(sys.argv[4]) == 'True' else False
+    quite = True if len(sys.argv) >= 6 and str(sys.argv[5]) == 'True' else False
 
-    edgemap, stats = runPricing(data, 3600, 10000, -1, edgemap, True, False)
-    print( "%10s | %10f %10f %10f %5.1f | %10s %10s | %10s %10s %10s" %
-           (stats['status'], \
-           stats['primal'], stats['dual'], stats['dualroot'], 100 * stats['gap'], \
-           stats['time'], stats['nnodes'], \
-           stats['nedges'], stats['nxused'], stats['nyused']))
+    data = read_data(str(sys.argv[1]))
+    edgemap, stats = runPricing(data, timelim, memlim, -1, None, display, quite)
+
+    print('STATS: ' + str(stats))
